@@ -83,7 +83,7 @@ public class database {
        //STEP 4: Execute a query
 
        String sql = "DELETE FROM user where id equal" +
-                    id.toString(); 
+                    id; 
 
        stmt.executeUpdate(sql);
        System.out.println("Deleted");
@@ -124,7 +124,7 @@ public class database {
        //STEP 4: Execute a query
 
        String sql = "INSERT INTO user (id,name,mail,phone) " +"Values"+"("+
-                    id.toString()+","+name+","+mail+","+phone+")"; 
+                    id+","+name+","+mail+","+phone+")"; 
 
        stmt.executeUpdate(sql);
        System.out.println("Inserted");
@@ -168,15 +168,13 @@ public class database {
        String sql = "SELECT name, phone, mail FROM user where id equal "
                +id.toString(); 
 
-       ResultSet rs = stmt.executeQuery(sql);
-       
-       u.id = rs.getString("id");
-       u.name = rs.getString("name");
-       u.mail = rs.getString("mail");
-       u.phone = rs.getString("phone");
-       System.out.println("Selected");
-       
-       rs.close();
+        try (ResultSet rs = stmt.executeQuery(sql)) {
+            u.id = rs.getString("id");
+            u.name = rs.getString("name");
+            u.mail = rs.getString("mail");
+            u.phone = rs.getString("phone");
+            System.out.println("Selected");
+        }
     }catch(SQLException | ClassNotFoundException se){
         //Handle errors for JDBC
 
@@ -218,17 +216,16 @@ public class database {
 
        String sql = "SELECT * FROM user ; "; 
 
-       ResultSet rs = stmt.executeQuery(sql);
-       user u = new user();
-       while(rs.next()){
-           u.id = rs.getString("id");
-           u.name = rs.getString("name");
-           u.mail = rs.getString("mail");
-           u.phone = rs.getString("phone");
-           users.add(u);
-            
-       }
-       rs.close();
+        try (ResultSet rs = stmt.executeQuery(sql)) {
+            user u = new user();
+            while(rs.next()){
+                u.id = rs.getString("id");
+                u.name = rs.getString("name");
+                u.mail = rs.getString("mail");
+                u.phone = rs.getString("phone");
+                users.add(u);
+                
+            }}
        
     }catch(SQLException | ClassNotFoundException se){
         //Handle errors for JDBC
