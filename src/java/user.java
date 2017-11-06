@@ -9,7 +9,10 @@
  * @author y
  */
 public class user {
-    Integer id;
+    user(){
+        
+    }
+    String id;
     String name;
     String mail;
     String phone;

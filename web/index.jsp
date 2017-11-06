@@ -13,13 +13,10 @@
     </head>
     
     <% 
-            
        RequestDispatcher rd =  request.getRequestDispatcher("Auth");
        rd.forward(request, response);
-       
     %>
-    
-    
+
     <body>
         <h1>Hello World!</h1>
     </body>
