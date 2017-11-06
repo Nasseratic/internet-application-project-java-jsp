@@ -6,6 +6,7 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -35,9 +36,17 @@ public class StoreTheSession extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
             HashMap<String, HttpSession> map = new HashMap<>();
-
+            database db = new database();
            if (request.getServletContext().getAttribute("sessionManegar") == null) {
                // TODO go get it from the DB
+               HttpSession session = request.getSession();
+               ArrayList<user> users =  db.selectAll();
+               for(int i=0; i<users.size();i++){
+                   session.setAttribute("name", users.get(i).name);
+                   session.setAttribute("mail", users.get(i).mail);
+                   session.setAttribute("phone", users.get(i).phone);
+                   map.put(users.get(i).id, session);
+               }
                request.getServletContext().setAttribute("sessionManegar", map);
                request.getServletContext().setAttribute("nextId" , 0);
            } else {
@@ -61,6 +70,10 @@ public class StoreTheSession extends HttpServlet {
                 response.addCookie(new Cookie("sessionId", nextId ));
                 request.getServletContext().setAttribute("nextId", Integer.parseInt(nextId) + 1 );
             // TODO insert the values to the database
+                db.insert(nextId, newSession.getAttribute("name").toString(), 
+                        newSession.getAttribute("phone").toString(),
+                        newSession.getAttribute("mail").toString());
+                
 
             /*
             }else{

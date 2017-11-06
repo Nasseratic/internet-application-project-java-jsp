@@ -6,6 +6,7 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -37,13 +38,24 @@ public class Auth extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HashMap<String, HttpSession> map;
         HttpSession currSession = request.getSession();
-
+        database db = new database();
+        
+        //Create table
+        db.createTable();
         String sessionId = searchSession(request.getCookies());
         System.out.println(sessionId);
         map = new HashMap<>();
         
         if (request.getServletContext().getAttribute("sessionManegar") == null) {
             // TODO go get it from the DB
+               HttpSession session = request.getSession();
+               ArrayList<user> users =  db.selectAll();
+               for(int i=0; i<users.size();i++){
+                   session.setAttribute("name", users.get(i).name);
+                   session.setAttribute("mail", users.get(i).mail);
+                   session.setAttribute("phone", users.get(i).phone);
+                   map.put(users.get(i).id, session);
+               }
             request.getServletContext().setAttribute("sessionManegar", map);
             request.getServletContext().setAttribute("nextId" , 0);
         } else {
