@@ -7,6 +7,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -19,8 +20,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author LENOVO
  */
-@WebServlet(urlPatterns = {"/auth"})
-public class auth extends HttpServlet {
+@WebServlet(urlPatterns = {"/signUser"})
+public class StoreTheSession extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,36 +34,44 @@ public class auth extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        HashMap<String, HttpSession> map;
-        HttpSession currSession = request.getSession();
+            HashMap<String, HttpSession> map = new HashMap<>();
 
-        String sessionId = searchSession(request.getCookies());
-        System.out.println(sessionId);
-        map = new HashMap<>();
+           if (request.getServletContext().getAttribute("sessionManegar") == null) {
+               // TODO go get it from the DB
+               request.getServletContext().setAttribute("sessionManegar", map);
+               request.getServletContext().setAttribute("nextId" , 0);
+           } else {
+               map = ((HashMap<String, HttpSession>) request.getServletContext().getAttribute("sessionManegar"));
+           }
+           
+            HttpSession newSession = request.getSession(true);
+            newSession = request.getSession();
+            RequestDispatcher dis = request.getRequestDispatcher("sign.jsp");
 
-        if (request.getServletContext().getAttribute("sessionManegar") == null) {
-            currSession = request.getSession();
-            map.put("5" , currSession);
-            request.getServletContext().setAttribute("sessionManegar", map);
-        } else {
-            currSession = ((HashMap<String, HttpSession>) request.getServletContext().getAttribute("sessionManegar")).get(sessionId);
-        }
-        System.out.println( currSession + "   -----   " +  sessionId);
-        if (sessionId != null && currSession.getAttribute(sessionId) != null) {
             
-            System.out.println("NICE");
-            System.out.println(  currSession.getAttribute(sessionId));
-        } else {
-            System.out.println("OHHH");
-            int length = 10;
-            boolean useLetters = true;
-            boolean useNumbers = false;
-            response.addCookie(new Cookie("sessionId", "5" ));
-            request.getSession().setAttribute("userNme", "Mohamed");
-            currSession.setAttribute(sessionId, "Mohamed" );
-        }
+            /*
+            if ( no validation errors ) {
+                dis = request.getRequestDispatcher("welcome.jsp");
+                dis.forward(request, response);
+            */
+            
+                String  nextId;
+                nextId = request.getServletContext().getAttribute("nextId").toString();
+                map.put( nextId , newSession);
+                response.addCookie(new Cookie("sessionId", nextId ));
+                request.getServletContext().setAttribute("nextId", Integer.parseInt(nextId) + 1 );
+            // TODO insert the values to the database
 
+            /*
+            }else{
+                dis.forward(request, response);
+                dis = request.getRequestDispatcher("sign.jsp");
+            }
+            
+            
+            */
+           
+           
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -103,21 +112,5 @@ public class auth extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    public String searchSession(Cookie cookies[]) {
-        Cookie cookie;
-        if (cookies != null) {
-            System.out.println("fe cook");
-            for (Cookie cookie1 : cookies) {
-                cookie = cookie1;
-                String cookieName = cookie.getName();
-                String cookieValue = cookie.getValue();
-                if (cookieName.equals("sessionId")) {
-                    return cookieValue;
-                }
-            }
-        }
-        return null;
-    }
 
 }
