@@ -22,7 +22,6 @@ import javax.servlet.http.HttpSession;
  */
 @WebServlet(urlPatterns = {"/auth"})
 public class Auth extends HttpServlet {
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -34,41 +33,33 @@ public class Auth extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
         HashMap<String, HttpSession> map;
         HttpSession currSession = request.getSession();
 
         String sessionId = searchSession(request.getCookies());
-        System.out.println(sessionId);
         map = new HashMap<>();
-        
         if (request.getServletContext().getAttribute("sessionManegar") == null) {
             // TODO go get it from the DB
             request.getServletContext().setAttribute("sessionManegar", map);
-            request.getServletContext().setAttribute("nextId" , 0);
+            request.getServletContext().setAttribute("nextId" , map.size() );
         } else {
             map = ((HashMap<String, HttpSession>) request.getServletContext().getAttribute("sessionManegar"));
             currSession = map.get(sessionId);
         }
-        
+
         RequestDispatcher dis = request.getRequestDispatcher("sign.jsp");
         if (sessionId != null && map.get(sessionId) != null) {
             dis = request.getRequestDispatcher("welcome.jsp");
-            System.out.println("NICE");
+            System.out.println("WELCOME BACK USER");
             dis.forward(request, response);
-        }else {
-            //TODO 
-            // remove the cookie and redirect to sign page 
-//            System.out.println("OHHH");
-//            currSession = request.getSession();
-//            currSession.setAttribute("name", "Mohamed" );
-//            String  nextId;
-//            nextId = request.getServletContext().getAttribute("nextId").toString();
-//            map.put( nextId , currSession);
-//            response.addCookie(new Cookie("sessionId", nextId ));
-//            request.getServletContext().setAttribute("nextId", Integer.parseInt(nextId) + 1 );
-        }
+        }else if (sessionId != null){
+            eraseCookie("sessionId" , "/");
+            System.out.println("GET OUT");
+            dis.forward(request, response);
 
+        }else{
+            dis.forward(request, response);  
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -124,6 +115,13 @@ public class Auth extends HttpServlet {
             }
         }
         return null;
+    }
+public static Cookie eraseCookie(String strCookieName, String strPath) {
+        Cookie cookie = new Cookie(strCookieName, "");
+        cookie.setMaxAge(0);
+        cookie.setPath(strPath);
+
+        return cookie;
     }
 
 }

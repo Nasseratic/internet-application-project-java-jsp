@@ -42,38 +42,20 @@ public class StoreTheSession extends HttpServlet {
                request.getServletContext().setAttribute("nextId" , 0);
            } else {
                map = ((HashMap<String, HttpSession>) request.getServletContext().getAttribute("sessionManegar"));
-           }
+            }
            
             HttpSession newSession = request.getSession(true);
-            newSession = request.getSession();
             RequestDispatcher dis = request.getRequestDispatcher("sign.jsp");
-
-            
-            /*
-            if ( no validation errors ) {
-                dis = request.getRequestDispatcher("welcome.jsp");
-                dis.forward(request, response);
-            */
-            
-                String  nextId;
-                nextId = request.getServletContext().getAttribute("nextId").toString();
-                map.put( nextId , newSession);
-                response.addCookie(new Cookie("sessionId", nextId ));
-                request.getServletContext().setAttribute("nextId", Integer.parseInt(nextId) + 1 );
-            // TODO insert the values to the database
-
-            /*
-            }else{
-                dis.forward(request, response);
-                dis = request.getRequestDispatcher("sign.jsp");
-            }
-            
-            
-            */
-           
-           
+            newSession.setAttribute("username", request.getParameter("username"));
+            newSession.setAttribute("email", request.getParameter("email"));
+            newSession.setAttribute("phone", request.getParameter("phone"));
+            String  nextId =  request.getServletContext().getAttribute("nextId").toString();
+            map.put( nextId , newSession);
+            Cookie cookie = new Cookie("sessionId", nextId);
+            cookie.setMaxAge(3);
+            response.addCookie(cookie);
+            request.getServletContext().setAttribute("nextId", Integer.parseInt(nextId) + 1 );
     }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
