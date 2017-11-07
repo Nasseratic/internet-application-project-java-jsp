@@ -12,6 +12,11 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1><%= request.getServletContext().getAttribute("result") %></h1>
+        <h1>Hello<%= request.getAttribute("username") %>,</h1>
+        <h2>Email<%= request.getAttribute("email") %></h2>
+        <h2>Phone<%= request.getAttribute("phone") %></h2>
+        <form action="Logout">
+            <button type="submit"> LOGOUT </button>
+        </form>
     </body>
 </html>

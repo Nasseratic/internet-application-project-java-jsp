@@ -11,11 +11,11 @@ import java.util.ArrayList;
 public class database {
    // JDBC driver name and database URL
    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-   static final String DB_URL = "jdbc:mysql://localhost/USER";
+   static final String DB_URL = "jdbc:mysql://localhost:3306/USER";
 
    //  Database credentials
-   static final String USER = "username";
-   static final String PASS = "password";
+   static final String USER = "root";
+   static final String PASS = "";
    
    
    
@@ -82,8 +82,8 @@ public class database {
        stmt = conn.createStatement();
        //STEP 4: Execute a query
 
-       String sql = "DELETE FROM user where id equal" +
-                    id; 
+       String sql = "DELETE FROM user where id = \'" +
+                    id+"\'"; 
 
        stmt.executeUpdate(sql);
        System.out.println("Deleted");
@@ -123,8 +123,8 @@ public class database {
        stmt = conn.createStatement();
        //STEP 4: Execute a query
 
-       String sql = "INSERT INTO user (id,name,mail,phone) " +"Values"+"("+
-                    id+","+name+","+mail+","+phone+")"; 
+       String sql = "INSERT INTO user (id,name,mail,phone) " +"Values"+"(\'"+
+                    id+"\',\'"+name+"\',\'"+mail+"\',\'"+phone+"\')"; 
 
        stmt.executeUpdate(sql);
        System.out.println("Inserted");
